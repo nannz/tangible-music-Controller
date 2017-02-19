@@ -2,6 +2,8 @@
 #include "Adafruit_DRV2605.h"
 Adafruit_DRV2605 drv;
 uint8_t driveEffect = 13; //the effect of the vibrating motor.
+int motorLevel = 0;
+int potenDriveEffect = 80;
 
 //latching button for speed
 const int latchingButPin = 7; //the number pin of the latching button
@@ -12,7 +14,7 @@ long debounce2 = 20;
 
 //soft rotary potentiometer
 int softpotPin = A0; //Analog pin A0
-int curPotenVal = 512; //value from the potenmeter
+//int curPotenVal = 512; //value from the potenmeter
 int prevPotenVal = 512;
 bool potenState = false;
 
@@ -39,15 +41,14 @@ void setup() {
   pinMode(latchingButPin, INPUT);
   //begin the motor drive
   drv.begin();
-  drv.selectLibrary(1);
-  // I2C trigger by sending 'go' command
-  // default, internal trigger when sending GO command
-  drv.setMode(DRV2605_MODE_INTTRIG);
+  drv.setMode(DRV2605_MODE_REALTIME);
+  //drv.selectLibrary(1);
+  //drv.setMode(DRV2605_MODE_INTTRIG);
 }
 
 void loop() {
-  curPotenVal = analogRead(softpotPin);
-  //Serial.println(curPotenVal);
+  int curPotenVal = analogRead(softpotPin);
+  Serial.println(curPotenVal);
   //reading the latching button switch state for speed of the song.
   readingLatchingButState = digitalRead(latchingButPin);
   //reading the micro switch state for random song.
@@ -74,32 +75,38 @@ void loop() {
   previousMicroSwitch = readingMicroSwitch;
   
   //the rotary potentiometer. determining states.
-  if (curPotenVal < notTouchPoint && curPotenVal != 365 && curPotenVal != 364) {//when not touched, it's automatically 365
+  if (curPotenVal < notTouchPoint && curPotenVal != 365 && curPotenVal != 364 && curPotenVal != 366) {//when not touched, it's automatically 365
     //Serial.println(curPotenVal);
     if (curPotenVal - prevPotenVal < -4) { //to decrease the noise
       //turn left
       curPotenState = 1;
+      motorLevel = potenDriveEffect;
     } else if (curPotenVal - prevPotenVal > 4) {
       //turn right
       curPotenState = 2;
+      motorLevel = potenDriveEffect;
     } else {
       //not move
       curPotenState = 0;
+      motorLevel = 0;
     }
     if (curPotenState == 0 && prevPotenState == 1) { //play previous sone
       Serial.println("skip back");
-      runDrive(driveEffect); // play the drive.
+       motorLevel = 0;
     }
     if (curPotenState == 0 && prevPotenState == 2) {
       Serial.println("skip ahead");
-      runDrive(driveEffect);
+       motorLevel = 0;
     }
     //if now is stop and prev is left -> 前一首
     //if now is stop and prev is right -> 后一首
     prevPotenState = curPotenState;
     prevPotenVal = curPotenVal;
 
+  }else{
+    motorLevel = 0;
   }
+  drv.setRealtimeValue(motorLevel);
   delay(responseDelay);
 }
 
@@ -112,7 +119,6 @@ int speedControl(int readingLatchingButState, int prevLatchingButState,
     } else {
       Serial.println("2X speed");
     }
-    //Serial.println("changeSpeed");
     time = millis();
   }
   prevLatchingButState = readingLatchingButState;
