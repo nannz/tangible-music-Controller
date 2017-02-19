@@ -1,5 +1,3 @@
-
-
 void runDrive(int effect) {
   // set the effect to play
   drv.setWaveform(0, effect);  // play effect
