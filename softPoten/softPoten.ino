@@ -54,19 +54,14 @@ void loop() {
   readingMicroSwitch = digitalRead(microSwitchInPin);
 
   //the latching button to control the speed of a song.
-  if(readingLatchingButState != prevLatchingButState && millis() - time > debounce2){
-    if(readingLatchingButState == HIGH){
-      Serial.println("original speed");
-    }else{
-      Serial.println("2X speed");
-    }
-    //Serial.println("changeSpeed");
-     time = millis();
-  }
-  prevLatchingButState = readingLatchingButState;
+  prevLatchingButState = speedControl(readingLatchingButState,prevLatchingButState,debounce2);
 
+//  int microResult[] = {previousMicroSwitch,microSwitchState};
+//  microResult = randomSong(readingMicroSwitch,previousMicroSwitch,microSwitchState,debounce);
+//  previousMicroSwitch = microResult[0];
+//  microSwitchState = microResult[1];
   //the micro switch to play a random song.
-  if (readingMicroSwitch == HIGH && previousMicroSwitch == LOW && millis() - time > debounce) {
+  if (readingMicroSwitch != previousMicroSwitch && millis() - time > debounce) {
     if (microSwitchState == HIGH) {
       microSwitchState = LOW;
       //Serial.println(switchState);
@@ -76,7 +71,8 @@ void loop() {
     }
     time = millis();
   }
-
+  previousMicroSwitch = readingMicroSwitch;
+  
   //the rotary potentiometer. determining states.
   if (curPotenVal < notTouchPoint && curPotenVal != 365 && curPotenVal != 364) {//when not touched, it's automatically 365
     //Serial.println(curPotenVal);
@@ -105,6 +101,22 @@ void loop() {
 
   }
   delay(responseDelay);
-
-
 }
+
+int speedControl(int readingLatchingButState, int prevLatchingButState,
+                  long debounce2) {
+  //the latching button to control the speed of a song.
+  if (readingLatchingButState != prevLatchingButState && millis() - time > debounce2) {
+    if (readingLatchingButState == HIGH) {
+      Serial.println("original speed");
+    } else {
+      Serial.println("2X speed");
+    }
+    //Serial.println("changeSpeed");
+    time = millis();
+  }
+  prevLatchingButState = readingLatchingButState;
+  return prevLatchingButState;
+}
+
+
