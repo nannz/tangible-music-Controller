@@ -1,3 +1,5 @@
+//a new version to back up for the final version.
+
 #include <Wire.h>
 #include "Adafruit_DRV2605.h"
 Adafruit_DRV2605 drv;
@@ -87,11 +89,11 @@ void loop() {
   }
   //remind the click time is enough.
   if (curFsrState == HIGH && (millis() - fsrDownTime) >= fsrHoldTime) {
-    Serial.println("It's enough hold time.");
+    //Serial.println("It's enough hold time.");
     motorLevel = fsrClickDriveEffect;
     //remind the press time is enough.
     if ((millis() - fsrDownTime) >= fsrLongHoldTime) {
-      Serial.println("It's enough press time.");
+      //Serial.println("It's enough press time.");
       motorLevel = fsrPressDriveEffect;
     }
   }
@@ -99,10 +101,12 @@ void loop() {
   if (curFsrState == LOW && prevFsrState == HIGH ) {
     if ((fsrUpTime - fsrDownTime) >= fsrHoldTime) {
       if ((fsrUpTime - fsrDownTime) >= fsrLongHoldTime) {
-        Serial.println("trigger long pressed");
+        //Serial.println("trigger long pressed");
+        Serial.write(49);
         motorLevel = 0;
       } else {
-        Serial.println("trigger clicked");
+        //Serial.println("trigger clicked");
+        Serial.write(50);
         motorLevel = 0;
       }
     } else {
@@ -125,7 +129,8 @@ void loop() {
       //Serial.println(switchState);
     } else {
       microSwitchState = HIGH;
-      Serial.println("random song");
+      //Serial.println("random song");
+      Serial.write(55);
     }
     time = millis();
   }
@@ -150,11 +155,13 @@ void loop() {
       motorLevel = 0;
     }
     if (curPotenState == 0 && prevPotenState == 1) { //play previous sone
-      Serial.println("skip back");
+      //Serial.println("skip back");
+      Serial.write(52);
       motorLevel = 0;
     }
     if (curPotenState == 0 && prevPotenState == 2) {
-      Serial.println("skip ahead");
+      //Serial.println("skip ahead");
+      Serial.write(51);
       motorLevel = 0;
     }
     //if now is stop and prev is left -> 前一首
@@ -173,9 +180,11 @@ int speedControl(int readingLatchingButState, int prevLatchingButState,
   //the latching button to control the speed of a song.
   if (readingLatchingButState != prevLatchingButState && millis() - time > debounce2) {
     if (readingLatchingButState == HIGH) {
-      Serial.println("original speed");
+      //Serial.println("original speed");
+      Serial.write(54);
     } else {
-      Serial.println("2X speed");
+      //Serial.println("2X speed");
+      Serial.write(53);
     }
     time = millis();
   }
