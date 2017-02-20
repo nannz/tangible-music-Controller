@@ -8,13 +8,10 @@ int fsrPressDriveEffect = 80;
 
 int fsrPin = A1;
 int fsrReading;
-
 int curFsrState = LOW;
 int prevFsrState = LOW;
-
 long fsrDownTime = -1;
 long fsrUpTime = -1;
-long time = 0;
 int fsrHoldTime = 100; // ms hold period: how long to wait for press+hold event
 int fsrLongHoldTime = 1000; // ms long hold period: how long to wait for press+hold event
 
@@ -29,8 +26,6 @@ void setup() {
 
 void loop() {
   fsrReading = analogRead(fsrPin);
-  //Serial.print("Analog reading = ");
-  //Serial.println(fsrReading);     // the raw analog reading
 
   if (fsrReading == 0) {
     curFsrState = LOW;
@@ -60,11 +55,6 @@ void loop() {
       motorLevel = fsrPressDriveEffect;
     }
   }
-  
-//  if (curFsrState == HIGH &&(millis() - fsrDownTime) >= fsrLongHoldTime) {
-//    Serial.println("It's enough press time.");
-//    motorLevel = fsrPressDriveEffect;
-//  }
   //trigger the function
   if (curFsrState == LOW && prevFsrState == HIGH ) {
     if ((fsrUpTime - fsrDownTime) >= fsrHoldTime) {
@@ -79,7 +69,6 @@ void loop() {
       motorLevel = 0;
     }
   }
-  
   prevFsrState = curFsrState;
 
   //Serial.print("motorLevel: ");
