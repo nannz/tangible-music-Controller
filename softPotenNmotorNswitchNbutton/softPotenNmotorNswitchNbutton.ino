@@ -58,10 +58,10 @@ void setup() {
 
 void loop() {
   curPotenVal = analogRead(softpotPin);
-  if(curPotenVal >=360 && curPotenVal <= 370){
+  if(curPotenVal >=360 && curPotenVal <= 375){
     curPotenVal = 0;
   }
-  Serial.println(curPotenVal);
+  //Serial.println(curPotenVal);
   //reading the latching button switch state for speed of the song.
   readingLatchingButState = digitalRead(latchingButPin);
   //reading the micro switch state for random song.
@@ -137,7 +137,7 @@ void loop() {
   //-----------------------------------------------------//
 
   //the rotary potentiometer. determining states.
-  if (curPotenVal < notTouchPoint && curPotenVal >10) {//when not touched, it's automatically 365
+  if (curPotenVal < notTouchPoint && curPotenVal >10) {
     //Serial.println(curPotenVal);
     if (curPotenVal - prevPotenVal < -20) { //to decrease the noise
       //turn left

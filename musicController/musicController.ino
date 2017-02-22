@@ -60,6 +60,9 @@ void setup() {
 
 void loop() {
   curPotenVal = analogRead(softpotPin);
+  if(curPotenVal >=360 && curPotenVal <= 375){
+    curPotenVal = 0;
+  }
   //Serial.println(curPotenVal);
   //reading the latching button switch state for speed of the song.
   readingLatchingButState = digitalRead(latchingButPin);
@@ -139,13 +142,13 @@ void loop() {
   //-----------------------------------------------------//
 
   //the rotary potentiometer. determining states.
-  if (curPotenVal < notTouchPoint && curPotenVal != 365 && curPotenVal != 364 && curPotenVal != 366) {//when not touched, it's automatically 365
+  if (curPotenVal < notTouchPoint && curPotenVal >10) {
     //Serial.println(curPotenVal);
-    if (curPotenVal - prevPotenVal < -3) { //to decrease the noise
+    if (curPotenVal - prevPotenVal < -20) { //to decrease the noise
       //turn left
       curPotenState = 1;
       motorLevel = potenDriveEffect;
-    } else if (curPotenVal - prevPotenVal > 3) {
+    } else if (curPotenVal - prevPotenVal > 20) {
       //turn right
       curPotenState = 2;
       motorLevel = potenDriveEffect;
